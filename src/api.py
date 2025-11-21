@@ -5,13 +5,15 @@ Provides REST API endpoints for extracting links from websites.
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from src.link_extractor import LinkExtractor
 import traceback
 import sys
 import os
 
-# Add parent directory to path for imports
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Add current directory to path for imports
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, current_dir)
+
+from link_extractor import LinkExtractor
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for frontend

@@ -7,10 +7,11 @@ import streamlit as st
 import sys
 import os
 
-# Add parent directory to path for imports
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# Add current directory to path for imports
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, current_dir)
 
-from src.link_extractor import LinkExtractor
+from link_extractor import LinkExtractor
 import time
 from urllib.parse import urlparse
 
