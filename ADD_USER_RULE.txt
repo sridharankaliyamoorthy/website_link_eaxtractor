@@ -1,0 +1,54 @@
+Smart Repository Detection and Auto-Push
+
+When working with Git repositories or when the user mentions @gitcommit.mdc, always follow these rules:
+
+Repository Detection Priority
+
+Before prompting for a GitHub repository URL, check in this order:
+1. Git Remote: git remote get-url origin
+2. Config File: .git-repo-config file (look for GIT_REPO_URL=)
+3. Environment Variable: $GIT_REPO_URL
+4. .env File: Check for GIT_REPO_URL in .env
+
+Rules to Follow
+
+- NEVER prompt for repository URL if it already exists in any of the above sources
+- Only prompt ONCE - if repository URL is not found, ask for it and save it
+- Save to multiple locations: Store in .git-repo-config, git remote, and optionally environment variable
+- Show status before operations: Display current repository configuration before git commands
+- Avoid duplicate prompts: Check ALL sources before asking user
+- Document skipped steps: Note which steps were skipped due to existing configuration
+
+Implementation Steps
+
+When setting up git operations or when user mentions @gitcommit.mdc:
+
+1. First, check for existing repository URL:
+   - Run: git remote get-url origin 2>/dev/null
+   - Check: grep "^GIT_REPO_URL=" .git-repo-config 2>/dev/null
+   - Check: Environment variable $GIT_REPO_URL
+   - Check: .env file for GIT_REPO_URL
+
+2. If found, use it and skip prompts:
+   - Display: "✅ Repository URL found: [url]"
+   - Continue with git operations
+   - Do NOT ask for repository URL again
+
+3. If not found, prompt once:
+   - Ask: "Enter your GitHub repository URL:"
+   - Save to .git-repo-config file
+   - Save to git remote: git remote add origin [url] or git remote set-url origin [url]
+   - Display: "✅ Repository URL saved: [url]"
+
+4. After saving, never prompt again for this project
+
+Auto-Push Workflow
+
+When user mentions @gitcommit.mdc or commits code:
+
+1. Check repository URL (using priority above)
+2. If not found, prompt once and save
+3. Stage changes: git add -A
+4. Commit with message (following conventional commits from gitcommit.mdc)
+5. Push to remote: git push -u origin [branch]
+6. Show success message with repository link

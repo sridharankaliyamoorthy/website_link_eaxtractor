@@ -1,0 +1,104 @@
+---
+alwaysApply: true
+---
+
+# Repository Setup and Auto-Push Rules
+
+## Smart Repository Detection
+
+When publishing projects or organizing files for deployment, always check for existing GitHub repository configuration before prompting.
+
+### Detection Priority (in order):
+
+1. **Git Remote** - Check `git remote get-url origin` (highest priority)
+2. **Config File** - Check `.git-repo-config` file
+3. **Environment Variable** - Check `GIT_REPO_URL` environment variable
+4. **`.env` File** - Check for `GIT_REPO_URL` in `.env` file
+
+### Rules:
+
+- ✅ **Never prompt for repository URL if it already exists** in any of the above sources
+- ✅ **Only prompt once** - if repository URL is not found, ask for it and save it
+- ✅ **Save to multiple locations** - Store in `.git-repo-config`, git remote, and optionally environment variable
+- ✅ **Show status before operations** - Display current repository configuration before git commands
+- ✅ **Avoid duplicate prompts** - Check all sources before asking user
+- ✅ **Document skipped steps** - Note which steps were skipped due to existing configuration
+
+### Implementation:
+
+When setting up git operations:
+
+1. **First, check for existing repository URL:**
+   ```bash
+   # Check git remote
+   git remote get-url origin 2>/dev/null
+   
+   # Check config file
+   grep "^GIT_REPO_URL=" .git-repo-config 2>/dev/null
+   
+   # Check environment variable
+   echo $GIT_REPO_URL
+   ```
+
+2. **If found, use it and skip prompts:**
+   - Display: "✅ Repository URL found: [url]"
+   - Continue with git operations
+   - Do NOT ask for repository URL again
+
+3. **If not found, prompt once:**
+   - Ask: "Enter your GitHub repository URL:"
+   - Save to `.git-repo-config` file
+   - Save to git remote
+   - Display: "✅ Repository URL saved: [url]"
+
+4. **After saving, never prompt again** for this project
+
+### Auto-Push Workflow:
+
+When user mentions `@gitcommit.mdc` or commits code:
+
+1. Check repository URL (using priority above)
+2. If not found, prompt once and save
+3. Stage changes: `git add -A`
+4. Commit with message (following conventional commits)
+5. Push to remote: `git push -u origin [branch]`
+6. Show success message with repository link
+
+### Files to Include:
+
+- `scripts/git-utils.sh` - Repository management functions
+- `.git-repo-config` - Persistent storage for repo URL
+- `scripts/auto-push.sh` - Auto-push script with smart detection
+- `.git/hooks/post-commit` - Git hook for automatic push prompts
+
+### Benefits:
+
+- ✅ One-time setup per project
+- ✅ No repeated prompts
+- ✅ Works across sessions
+- ✅ Efficient workflow
+- ✅ Clean user experience
+
+### Example Workflow:
+
+**First time:**
+```
+User: @gitcommit.mdc
+System: Checking repository configuration...
+System: ⚠️  No repository URL found
+System: Enter your GitHub repository URL: https://github.com/user/repo.git
+System: ✅ Repository URL saved
+System: Committing and pushing...
+System: ✅ Successfully pushed!
+```
+
+**Subsequent times:**
+```
+User: @gitcommit.mdc
+System: Checking repository configuration...
+System: ✅ Repository URL found: https://github.com/user/repo.git
+System: Committing and pushing...
+System: ✅ Successfully pushed!
+```
+
+**No duplicate prompts!**
