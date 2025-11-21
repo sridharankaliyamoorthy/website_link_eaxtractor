@@ -4,7 +4,13 @@ A vibrant and modern interface for extracting links from websites.
 """
 
 import streamlit as st
-from link_extractor import LinkExtractor
+import sys
+import os
+
+# Add parent directory to path for imports
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from src.link_extractor import LinkExtractor
 import time
 from urllib.parse import urlparse
 
