@@ -37,12 +37,24 @@ Footer (optional):
 
 When you mention `@gitcommit.mdc`, the system will help you commit and push automatically.
 
+### Smart Repository Detection
+
+The system checks for repository URL in this order (avoids duplicate prompts):
+1. ✅ **Git remote** (highest priority)
+2. ✅ **Config file** (`.git-repo-config`)
+3. ✅ **Environment variable** (`GIT_REPO_URL`)
+4. ✅ **`.env` file**
+
+**Only prompts if none are found** - ensuring a clean, one-time setup experience.
+
 ### Automatic Options:
 
 **Option 1: Git Hook (Automatic)**
-After every `git commit`, you'll be prompted to:
-- Set up remote repository URL (if not configured)
-- Push to remote automatically
+After every `git commit`, the system will:
+- ✅ Check for existing repository URL (no duplicate prompts!)
+- ✅ Only ask if repository URL is not found
+- ✅ Save URL for future use
+- ✅ Prompt to push automatically
 
 **Option 2: Auto-Push Script**
 ```bash
@@ -51,17 +63,26 @@ After every `git commit`, you'll be prompted to:
 This will:
 - Stage all changes
 - Commit with your message
-- Ask for repository URL if not set
+- Check for existing repository URL (smart detection)
+- Only prompt if not found (one-time setup)
+- Save URL to config file for future use
 - Push to remote automatically
 
-**Option 3: Manual Push**
+**Option 3: Check Repository Status**
 ```bash
-git push -u origin main
+source scripts/git-utils.sh && show_repo_status
 ```
+Shows current repository configuration and where it's stored.
 
-### Setting up remote (if not configured):
-```bash
-git remote add origin https://github.com/username/repo.git
-```
+### Repository Configuration
 
-**Note**: The post-commit hook will automatically prompt you for the repository URL if it's not configured, then ask if you want to push.
+The repository URL is automatically saved to:
+- `.git-repo-config` file (for persistence)
+- Git remote (for git commands)
+- Environment variable (optional)
+
+**Benefits:**
+- ✅ No repeated prompts
+- ✅ One-time setup
+- ✅ Works across sessions
+- ✅ Efficient workflow

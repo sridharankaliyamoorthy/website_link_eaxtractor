@@ -5,6 +5,12 @@
 
 set -e
 
+# Load utility functions
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+source "$SCRIPT_DIR/git-utils.sh" 2>/dev/null || {
+    echo "⚠️  Warning: Could not load git-utils.sh"
+}
+
 # Get current branch
 CURRENT_BRANCH=$(git branch --show-current)
 
@@ -13,6 +19,10 @@ if ! git rev-parse --git-dir > /dev/null 2>&1; then
     echo "❌ Not a git repository. Run 'git init' first."
     exit 1
 fi
+
+# Show current repo status
+echo "🔍 Checking repository configuration..."
+show_repo_status 2>/dev/null || echo ""
 
 # Check if there are changes to commit
 if [ -n "$(git status --porcelain)" ]; then
@@ -34,31 +44,15 @@ if [ -n "$(git status --porcelain)" ]; then
     git commit -m "$COMMIT_MSG"
 fi
 
-# Check if remote exists
-if ! git remote get-url origin &>/dev/null; then
-    echo ""
-    echo "⚠️  No remote repository configured!"
-    echo ""
-    read -p "Enter your GitHub repository URL: " REPO_URL
-    
-    if [ -z "$REPO_URL" ]; then
-        echo "❌ Repository URL is required"
-        exit 1
-    fi
-    
-    # Validate URL format
-    if [[ ! "$REPO_URL" =~ ^https://github.com/ ]] && [[ ! "$REPO_URL" =~ ^git@github.com: ]]; then
-        echo "⚠️  Warning: URL doesn't look like a GitHub URL"
-        read -p "Continue anyway? (y/n): " -n 1 -r
-        echo ""
-        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-            exit 1
-        fi
-    fi
-    
-    git remote add origin "$REPO_URL" 2>/dev/null || git remote set-url origin "$REPO_URL"
-    echo "✅ Remote 'origin' set to: $REPO_URL"
+# Check and setup repository URL (only prompts if not found)
+REPO_URL=$(check_and_setup_repo)
+if [ $? -ne 0 ] || [ -z "$REPO_URL" ]; then
+    echo "❌ Failed to get repository URL"
+    exit 1
 fi
+
+# If we got here, repo URL is set (either existing or newly configured)
+echo "✅ Using repository: $REPO_URL"
 
 # Push to remote
 echo ""

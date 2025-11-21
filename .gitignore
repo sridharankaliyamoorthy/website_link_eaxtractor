@@ -165,3 +165,5 @@ Thumbs.db
 logs/
 *.log
 
+# Git repo config (keep this file, but you can add it to gitignore if you prefer)
+# .git-repo-config
