@@ -1,0 +1,34 @@
+---
+alwaysApply: true
+---
+
+# Git Commit Message Guidelines
+
+Follow conventional commit format:
+- `feat:` for new features
+- `fix:` for bug fixes
+- `docs:` for documentation changes
+- `style:` for formatting changes
+- `refactor:` for code refactoring
+- `test:` for adding/updating tests
+- `chore:` for maintenance tasks
+- `perf:` for performance improvements
+- `ci:` for CI/CD changes
+- `build:` for build system changes
+
+Format: `type(scope): description`
+
+Examples:
+- `feat(api): add user authentication endpoint`
+- `fix(ui): resolve button alignment issue on mobile`
+- `docs: update installation instructions`
+- `refactor: improve code organization`
+- `test: add unit tests for link extraction`
+
+Body (optional):
+- Explain the "what" and "why" vs. "how"
+- Wrap at 72 characters
+- Reference issues: `Fixes #123`, `Closes #456`
+
+Footer (optional):
+- Breaking changes: `BREAKING CHANGE: description`
