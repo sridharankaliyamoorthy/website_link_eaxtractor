@@ -1,6 +1,7 @@
 ---
 alwaysApply: true
 ---
+
 # Git Commit Message Guidelines
 
 Follow conventional commit format:
@@ -31,3 +32,36 @@ Body (optional):
 
 Footer (optional):
 - Breaking changes: `BREAKING CHANGE: description`
+
+## 🚀 Auto-Push After Commit
+
+When you mention `@gitcommit.mdc`, the system will help you commit and push automatically.
+
+### Automatic Options:
+
+**Option 1: Git Hook (Automatic)**
+After every `git commit`, you'll be prompted to:
+- Set up remote repository URL (if not configured)
+- Push to remote automatically
+
+**Option 2: Auto-Push Script**
+```bash
+./scripts/auto-push.sh "your commit message"
+```
+This will:
+- Stage all changes
+- Commit with your message
+- Ask for repository URL if not set
+- Push to remote automatically
+
+**Option 3: Manual Push**
+```bash
+git push -u origin main
+```
+
+### Setting up remote (if not configured):
+```bash
+git remote add origin https://github.com/username/repo.git
+```
+
+**Note**: The post-commit hook will automatically prompt you for the repository URL if it's not configured, then ask if you want to push.
