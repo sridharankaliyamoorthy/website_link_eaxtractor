@@ -1,7 +1,6 @@
 ---
 alwaysApply: true
 ---
-
 # Git Commit Message Guidelines
 
 Follow conventional commit format:
